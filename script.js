@@ -99,7 +99,7 @@ function showCategoryPage(category) {
 
   categoryTitle.textContent = category;
   // Keep the proceed button at the top
-  itemsList.innerHTML = `<button class="proceed" id="proceed">My Order</button>`;
+  itemsList.innerHTML = `<button class="proceed" id="proceed">Finish</button>`;
 
   menuData[category].forEach(item => {
     // Check if we already have a saved quantity for this item
