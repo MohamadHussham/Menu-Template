@@ -129,20 +129,17 @@ function showCategoryPage(category) {
   document.querySelector(`[data-category="${category}"]`).classList.add("active-category");
 
 
-
-
-// Handle Increment and Decrement
-
-
 function attachItemListeners() {
+  // Select the items currently visible in the DOM
   document.querySelectorAll('.item').forEach(itemDiv => {
     const id = itemDiv.getAttribute('data-id');
     const input = itemDiv.querySelector('.quantity');
 
+    // Re-attach increment/decrement
     itemDiv.querySelector('.addQuantity').onclick = () => {
       const newVal = (parseInt(input.value) || 0) + 1;
       input.value = newVal;
-      cartState[id] = newVal; // Save to global state
+      cartState[id] = newVal;
     };
 
     itemDiv.querySelector('.deleteQuantity').onclick = () => {
@@ -150,37 +147,51 @@ function attachItemListeners() {
       if (val > 0) {
         const newVal = val - 1;
         input.value = newVal;
-        cartState[id] = newVal; // Save to global state
+        cartState[id] = newVal;
       }
     };
   });
 
-    document.getElementById('proceed').onclick = () => {
-    const selectedItems = [];
-    let grandTotal = 0;
+  // CRITICAL: Re-bind the proceed button every time listeners are refreshed
+  const proceedBtn = document.getElementById('proceed');
+  if (proceedBtn) {
+    proceedBtn.onclick = () => {
+      const selectedItems = [];
+      let grandTotal = 0;
 
-    // Loop through every item in your entire menuData object
-    Object.keys(menuData).forEach(cat => {
-      menuData[cat].forEach(item => {
-        const qty = cartState[item.id] || 0;
-        if (qty > 0) {
-          const priceValue = parseFloat(item.price.replace(/[^0-9.-]+/g, ""));
-          const subtotal = priceValue * qty;
-          grandTotal += subtotal;
-          selectedItems.push({ ...item, qty, subtotal });
-        }
+      Object.keys(menuData).forEach(cat => {
+        menuData[cat].forEach(item => {
+          const qty = cartState[item.id] || 0;
+          if (qty > 0) {
+            const priceValue = parseFloat(item.price.replace(/[^0-9.-]+/g, ""));
+            const subtotal = priceValue * qty;
+            grandTotal += subtotal;
+            selectedItems.push({ ...item, qty, subtotal });
+          }
+        });
       });
-    });
 
-    if (selectedItems.length === 0) return alert("Your cart is empty!");
-
-    renderSummaryPage(selectedItems, grandTotal);
-  };
+      if (selectedItems.length === 0) return alert("Your cart is empty!");
+      renderSummaryPage(selectedItems, grandTotal);
+    };
+  }
 }
 
+
+// Handle Increment and Decrement
+
+
 function renderSummaryPage(items, total) {
-    document.body.innerHTML = '<div class="summary-container"><h1>Order Summary</h1></div>';
-    const container = document.querySelector('.summary-container');
+    const mainContent = document.querySelector('.main-content');
+    const summaryView = document.getElementById('summary-view');
+    const container = summaryView.querySelector('.summary-container');
+
+    // 1. Switch Visibility
+    mainContent.style.display = 'none';
+    summaryView.style.display = 'block';
+
+    // 2. Build the Summary List
+    container.innerHTML = '<h1>Order Summary</h1>';
     items.forEach(item => {
         container.innerHTML += `
             <div class="summary-item">
@@ -189,71 +200,78 @@ function renderSummaryPage(items, total) {
     });
     container.innerHTML += `<h2>Grand Total: $${total.toFixed(2)}</h2>`;
 
-    const backBtn = document.createElement('button');
-    backBtn.innerText = 'Reset Order';
-    backBtn.id = 'resetButton';
-    backBtn.onclick = () => location.reload();
-    container.appendChild(backBtn);
+        // Create a container for the buttons
+    const controlsContainer = document.createElement('div');
+    controlsContainer.className = 'summary-controls'; // We will style this in CSS
 
+    // 3. EDIT BUTTON
+    const editBtn = document.createElement('button');
+    editBtn.innerText = 'Edit Order';
+    editBtn.id = 'editButton';
+    editBtn.onclick = () => {
+        summaryView.style.display = 'none';
+        mainContent.style.display = 'block';
+    };
+
+    // 4. RESET BUTTON
+    const resetBtn = document.createElement('button');
+    resetBtn.innerText = 'Reset Order';
+    resetBtn.id = 'resetButton';
+    resetBtn.onclick = () => location.reload();
+
+    // Append buttons to the control group
+    controlsContainer.appendChild(editBtn);
+    controlsContainer.appendChild(resetBtn);
+
+    // Append the group to your main summary container
+    container.appendChild(controlsContainer);
+
+
+    // 5. WHATSAPP BUTTON
     const whatsappBtn = document.createElement('button');
     whatsappBtn.innerText = 'Send Order On Whatsapp';
     whatsappBtn.id = 'whatsappBtn';
     container.appendChild(whatsappBtn);
 
+    // WHATSAPP CLICK HANDLER
+    whatsappBtn.onclick = () => {
+        const whatsappWindow = window.open('', '_blank');
+        whatsappWindow.document.write("Fetching precise location...");
 
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => sendWhatsAppMessage(pos.coords.latitude, pos.coords.longitude, total, whatsappWindow),
+                (err) => sendWhatsAppMessage(null, null, total, whatsappWindow),
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        } else {
+            sendWhatsAppMessage(null, null, total, whatsappWindow);
+        }
+    };
+}
 
-   whatsappBtn.onclick = () => {
-    const whatsappWindow = window.open('', '_blank');
-    whatsappWindow.document.write("Fetching precise location...");
-
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const { latitude, longitude } = position.coords;
-                sendWhatsAppMessage(latitude, longitude, total, whatsappWindow);
-            },
-            (error) => {
-                console.warn('Geolocation error:', error);
-                sendWhatsAppMessage(null, null, total, whatsappWindow);
-            },
-            { 
-                enableHighAccuracy: true, // Forces GPS for better precision
-                timeout: 10000,           // Wait up to 10 seconds for a lock
-                maximumAge: 0             // Don't use a cached location
-            }
-        );
-    } else {
-        sendWhatsAppMessage(null, null, total, whatsappWindow);
-    }
-};
-
+// Ensure sendWhatsAppMessage is defined globally or inside the same scope
 function sendWhatsAppMessage(lat, lng, currentTotal, targetWindow) {
     let whatsappText = "I want to order:\n";
-    const summaryItems = document.querySelectorAll(".summary-item p");
-    
-    summaryItems.forEach(p => {
+    document.querySelectorAll(".summary-item p").forEach(p => {
         whatsappText += `- ${p.innerText.trim()}\n`;
     });
 
     whatsappText += `\nGrand Total: $${currentTotal.toFixed(2)}`;
 
     if (lat && lng) {
-        // Double check: Both variables now have the $ sign
         whatsappText += `\n\n📍 Delivery Location:\nhttps://www.google.com/maps?q=${lat},${lng}`;
     } else {
         whatsappText += `\n\nLocation: Not provided`;
     }
 
     const encodedText = encodeURIComponent(whatsappText);
-    const whatsappLink = `https://wa.me/96176045076?text=${encodedText}`;
+    const link = `https://wa.me/96176045076?text=${encodedText}`;
     
-    if (targetWindow) {
-        targetWindow.location.href = whatsappLink;
-    } else {
-        window.open(whatsappLink, '_blank');
-    }
+    if (targetWindow) targetWindow.location.href = link;
+    else window.open(link, '_blank');
 }
-}
+
    
 
     

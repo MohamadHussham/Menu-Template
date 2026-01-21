@@ -16,7 +16,6 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   <link rel="icon" type="image/png" href="icon/Meal_menu.jpg">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com">
 
   <style>
     /* Preloader overlay styles */
@@ -236,6 +235,10 @@
     </div>
   </div>
 
+
+
+
+<div id="main-app-container">
   <div class="main-content">
     <!-- Homepage -->
     <div id="homepage" class="page active">
@@ -245,27 +248,22 @@
 
       <div class="categories">
         <div class="category-card" data-category="beverages">
-          <img src="icon/beverages.jpg" alt="Beverages" />
+          
           <h3>Beverages 🍹</h3>
         </div>
         <div class="category-card" data-category="chinese">
-          <img src="icon/Chinese Cuisine.jpeg" alt="Chinese Cuisine" />
           <h3>Chinese Cuisine 🥡</h3>
         </div>
         <div class="category-card" data-category="indian">
-          <img src="icon/indian-cuisine.jpeg" alt="Indian Cuisine" />
           <h3>Indian Cuisine 🍛</h3>
         </div>
         <div class="category-card" data-category="Rice">
-          <img src="icon/biryani.jpeg" alt="Rice" />
           <h3>Rice & Biryani 🍚</h3>
         </div>
         <div class="category-card" data-category="Special_Combos">
-          <img src="icon/special.jpeg" alt="Special Combos" />
-          <h3>Special Combos & Thalis 🍽️</h3>
+          <h3>Special Combos 🍽️</h3>
         </div>
         <div class="category-card" data-category="desserts">
-          <img src="icon/desssert.jpeg" alt="Desserts" />
           <h3>Desserts</h3>
         </div>
       </div>
@@ -274,8 +272,8 @@
     <!-- Category Page -->
     <div id="category-page" class="page">
       <header>
-        <button id="back-button">Continue</button>
-        <button class="proceed" id="proceed">Finish</button>
+        <button id="back-button">Back To Menu</button>
+        <button class="proceed" id="proceed">Finish Order</button>
         <h2 id="category-title"></h2>
       </header>
 
@@ -284,6 +282,10 @@
       </div>
     </div>
   </div>
+  <div id="summary-view" class="page" style="display: none;">
+      <div class="summary-container"></div>
+  </div>
+</div>
 
   <footer>
     <p>
