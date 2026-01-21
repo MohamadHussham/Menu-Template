@@ -181,14 +181,12 @@ function attachItemListeners() {
 function renderSummaryPage(items, total) {
     document.body.innerHTML = '<div class="summary-container"><h1>Order Summary</h1></div>';
     const container = document.querySelector('.summary-container');
-
     items.forEach(item => {
         container.innerHTML += `
             <div class="summary-item">
                 <p><strong>${item.name}</strong>: ${item.qty} x ${item.price} = $${item.subtotal.toFixed(2)}</p>
             </div>`;
     });
-
     container.innerHTML += `<h2>Grand Total: $${total.toFixed(2)}</h2>`;
 
     const backBtn = document.createElement('button');
@@ -203,40 +201,49 @@ function renderSummaryPage(items, total) {
     container.appendChild(whatsappBtn);
 
     whatsappBtn.onclick = () => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const location = `Lat: ${position.coords.latitude}, Lon: ${position.coords.longitude}`;
-                    sendWhatsAppMessage(items, total, location);
-                },
-                (error) => {
-                    console.error("Error getting location:", error);
-                    sendWhatsAppMessage(items, total, "Location not available");
-                }
-            );
-        } else {
-            console.error("Geolocation is not supported by this browser.");
-            sendWhatsAppMessage(items, total, "Location not available");
-        }
-    };
-}
+    // 1. Immediately open a blank window (this prevents the popup blocker)
+    const whatsappWindow = window.open('about:blank', '_blank');
+    
+    let userLocation = "Location not available";
 
-function sendWhatsAppMessage(items, total, location) {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                userLocation = `Lat: ${position.coords.latitude}, Long: ${position.coords.longitude}`;
+                // 2. Redirect the already-opened window
+                sendWhatsAppMessage(userLocation, total, whatsappWindow);
+            },
+            (error) => {
+                console.warn('Geolocation error:', error);
+                sendWhatsAppMessage(userLocation, total, whatsappWindow);
+            }
+        );
+    } else {
+        sendWhatsAppMessage(userLocation, total, whatsappWindow);
+    }
+};
+
+// Update sendWhatsAppMessage to accept the window reference
+function sendWhatsAppMessage(location, currentTotal, targetWindow) {
     let whatsappText = "I want to order:\n";
     const summaryItems = document.querySelectorAll(".summary-item p");
-
     summaryItems.forEach(p => {
         whatsappText += `- ${p.innerText.trim()}\n`;
     });
-
-    whatsappText += `\nGrand Total: $${total.toFixed(2)}\n`;
-    whatsappText += `\nMy Location: ${location}`;
+    whatsappText += `\nGrand Total: $${currentTotal.toFixed(2)}\n`;
+    whatsappText += `\nUser Location: ${location}`;
 
     const encodedText = encodeURIComponent(whatsappText);
     const whatsappLink = `https://wa.me/96176045076?text=${encodedText}`;
-    window.open(whatsappLink, '_blank');
-}
-
+    
+    // 3. Update the blank window's URL
+    if (targetWindow) {
+        targetWindow.location.href = whatsappLink;
+    } else {
+        // Fallback for browsers where window.open failed
+        window.location.href = whatsappLink;
+    }
+}}
    
 
     
