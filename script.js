@@ -218,7 +218,9 @@ function renderSummaryPage(items, total) {
     window.open(whatsappLink, '_blank');
   };
 }
-
+  document.addEventListener('dblclick', function(event) {
+        event.preventDefault();
+    }, { passive: false });
    
 
     
