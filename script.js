@@ -190,46 +190,38 @@ function renderSummaryPage(items, total) {
   });
 
   container.innerHTML += `<h2>Grand Total: $${total.toFixed(2)}</h2>`;
-  
+
   const backBtn = document.createElement('button');
   backBtn.innerText = 'Reset Order';
   backBtn.id = 'resetButton';
   backBtn.onclick = () => location.reload();
   container.appendChild(backBtn);
 
-  
   const whatsappBtn = document.createElement('button');
   whatsappBtn.innerText = 'Order';
   whatsappBtn.id = 'whatsappBtn';
   container.appendChild(whatsappBtn);
-  // Your phone number in international format (e.g., 1234567890)
-  const whatsappTextI = document.querySelectorAll(".summary-item");
-  const whatsappText = ""; 
-  whatsappTextI.forEach(item => {
-    whatsappText += `
-      
-        ${item.name}: ${item.qty} x ${item.price} = $${item.subtotal.toFixed(2)}
-      `;
-  });
-  const order = `I want to order This: ${whatsappText}`;
-
-  // Construct the WhatsApp link
-  const whatsappLink = `https://wa.me/96176045076?text=${order}`;
 
   whatsappBtn.onclick = () => {
-  window.open(whatsappLink, '_blank'); // Opens the link in a new tab/window
-  };
-  
-   }
+    let whatsappText = "I want to order:\n";
+    const summaryItems = document.querySelectorAll(".summary-item p");
 
-    itemDiv.querySelector('.deleteQuantity').onclick = () => {
-      let val = (parseInt(input.value) || 0);
-      if (val > 0) {
-        const newVal = val - 1;
-        input.value = newVal;
-        cartState[id] = newVal; // Save to global state
-      }
-    };
+    summaryItems.forEach(p => {
+      whatsappText += `- ${p.innerText.trim()}\n`;
+    });
+
+    whatsappText += `\nGrand Total: $${total.toFixed(2)}`;
+
+    const encodedText = encodeURIComponent(whatsappText);
+    const whatsappLink = `https://wa.me/96176045076?text=${encodedText}`;
+
+    window.open(whatsappLink, '_blank');
+  };
+}
+
+   
+
+    
  
 
  
