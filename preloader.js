@@ -7,6 +7,6 @@ window.addEventListener('load', function () {
       setTimeout(() => {
         preloader.style.display = 'none'; // Fully hide after transition
       }, 500); // Wait for fade-out transition to finish (match with CSS)
-    }, 500); // 2-second minimum visible duration
+    }, 2000); // 2-second minimum visible duration
   }
 });
