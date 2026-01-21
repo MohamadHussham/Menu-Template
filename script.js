@@ -179,48 +179,64 @@ function attachItemListeners() {
 }
 
 function renderSummaryPage(items, total) {
-  document.body.innerHTML = '<div class="summary-container"><h1>Order Summary</h1></div>';
-  const container = document.querySelector('.summary-container');
+    document.body.innerHTML = '<div class="summary-container"><h1>Order Summary</h1></div>';
+    const container = document.querySelector('.summary-container');
 
-  items.forEach(item => {
-    container.innerHTML += `
-      <div class="summary-item">
-        <p><strong>${item.name}</strong>: ${item.qty} x ${item.price} = $${item.subtotal.toFixed(2)}</p>
-      </div>`;
-  });
+    items.forEach(item => {
+        container.innerHTML += `
+            <div class="summary-item">
+                <p><strong>${item.name}</strong>: ${item.qty} x ${item.price} = $${item.subtotal.toFixed(2)}</p>
+            </div>`;
+    });
 
-  container.innerHTML += `<h2>Grand Total: $${total.toFixed(2)}</h2>`;
+    container.innerHTML += `<h2>Grand Total: $${total.toFixed(2)}</h2>`;
 
-  const backBtn = document.createElement('button');
-  backBtn.innerText = 'Reset Order';
-  backBtn.id = 'resetButton';
-  backBtn.onclick = () => location.reload();
-  container.appendChild(backBtn);
+    const backBtn = document.createElement('button');
+    backBtn.innerText = 'Reset Order';
+    backBtn.id = 'resetButton';
+    backBtn.onclick = () => location.reload();
+    container.appendChild(backBtn);
 
-  const whatsappBtn = document.createElement('button');
-  whatsappBtn.innerText = 'Order';
-  whatsappBtn.id = 'whatsappBtn';
-  container.appendChild(whatsappBtn);
+    const whatsappBtn = document.createElement('button');
+    whatsappBtn.innerText = 'Order';
+    whatsappBtn.id = 'whatsappBtn';
+    container.appendChild(whatsappBtn);
 
-  whatsappBtn.onclick = () => {
+    whatsappBtn.onclick = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const location = `Lat: ${position.coords.latitude}, Lon: ${position.coords.longitude}`;
+                    sendWhatsAppMessage(items, total, location);
+                },
+                (error) => {
+                    console.error("Error getting location:", error);
+                    sendWhatsAppMessage(items, total, "Location not available");
+                }
+            );
+        } else {
+            console.error("Geolocation is not supported by this browser.");
+            sendWhatsAppMessage(items, total, "Location not available");
+        }
+    };
+}
+
+function sendWhatsAppMessage(items, total, location) {
     let whatsappText = "I want to order:\n";
     const summaryItems = document.querySelectorAll(".summary-item p");
 
     summaryItems.forEach(p => {
-      whatsappText += `- ${p.innerText.trim()}\n`;
+        whatsappText += `- ${p.innerText.trim()}\n`;
     });
 
-    whatsappText += `\nGrand Total: $${total.toFixed(2)}`;
+    whatsappText += `\nGrand Total: $${total.toFixed(2)}\n`;
+    whatsappText += `\nMy Location: ${location}`;
 
     const encodedText = encodeURIComponent(whatsappText);
     const whatsappLink = `https://wa.me/96176045076?text=${encodedText}`;
-
     window.open(whatsappLink, '_blank');
-  };
 }
-  document.addEventListener('dblclick', function(event) {
-        event.preventDefault();
-    }, { passive: false });
+
    
 
     
