@@ -251,7 +251,7 @@ function sendWhatsAppMessage(lat, lng, currentTotal, targetWindow) {
         window.open(whatsappLink, '_blank');
     }
 }
-
+}
    
 
     
