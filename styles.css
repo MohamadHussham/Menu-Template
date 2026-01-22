@@ -220,7 +220,9 @@ header {
   font-weight: bold;
   color: #ff9800;
   font-size: 1.3em;
-  margin-top: 3px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: center;
 }
 
 /* Fix Text Visibility on Hover */
@@ -264,6 +266,16 @@ html, body {
   padding: 0;
   display: flex;
   flex-direction: column;
+  
+  /* Stops the "bounce" effect and the pull-to-refresh gesture */
+  overscroll-behavior-y: none;
+
+}
+.addingDiv{
+  margin-top: auto;       /* Safety net to ensure it stays at the very bottom */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Push content to fill space and keep footer at the bottom */
@@ -324,7 +336,9 @@ footer .designer {
   font-family: var(--font-stack);
 }
 .addItem:hover{
-  background-color:var(--hover-color);
+  background-color:var(--hover-color);font-weight: bold;
+  margin-bottom: 10px;
+  text-align: center;
 }
 .addingDiv{
   display: flex;
