@@ -10,6 +10,8 @@ Browse through a stylish selection of food categories and filter items easily by
 ## 📸 Preview
 <div style="text-align: center;">
   <img src="Preview.png" alt="Preview">
+  <img src="Preview1.png" alt="Preview1">
+  <img src="Preview2.png" alt="Preview2">
 </div>
 
 ---
