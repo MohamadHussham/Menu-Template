@@ -1,9 +1,9 @@
-# 🏨 Hotel-Menu Card
+# 🏨 Restaurant Menu Template 
 
 A sleek and modern digital hotel menu built with HTML, CSS, and JavaScript.  
 Browse through a stylish selection of food categories and filter items easily by type. Perfect for hotels, cafes, or restaurant websites looking to digitize their food menu.
 
-🔗 **Live Demo:** [hotel-menu.io](https://rajath2005.github.io/hotel-menu.io/)
+🔗 **Live Demo:** [Menu Template](https://menu-template-pi.vercel.app/)
 
 ---
 
