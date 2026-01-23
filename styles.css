@@ -237,9 +237,7 @@ header {
 .item:hover p {
   color: #fff;
 }
-.items-list .item:last-child {
-    margin-bottom: 80px; /* Adjust this value as needed */
-}
+
 .floating-proceed-btn {
   position: fixed;
   bottom: 50px;
@@ -587,7 +585,9 @@ footer .designer {
     justify-content: center;
     
   }
-
+.items-list .item:nth-last-child(-n + 2) {
+  margin-bottom:20px ;
+}
   /* Fix Image Sizing */
   .category-card img {
     width: 100%; /* Ensures it fits the card */
@@ -702,7 +702,12 @@ width:20vw;}
     padding: 15px;
    
   }
-
+  .items-list .item:nth-last-child( 2) {
+  margin-bottom:2.5px ;
+}
+ .items-list .item:last-child {
+  margin-bottom:100px ;
+}
   /* Fix Image Sizing */
   .category-card img {
     width: 100%; /* Ensures it fits the card */
