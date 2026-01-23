@@ -296,7 +296,7 @@ function sendWhatsAppMessage(lat, lng, currentTotal, targetWindow) {
     whatsappText += `\nGrand Total: $${currentTotal.toFixed(2)}`;
 
     if (lat && lng) {
-        whatsappText += `\n\n📍 Delivery Location:\nhttps://www.google.com/maps?q=${lat},${lng}`;
+        whatsappText += `\n\n&#x1F4CD Delivery Location:\nhttps://www.google.com/maps?q=${lat},${lng}`;
     } else {
         whatsappText += `\n\nLocation: Not provided`;
     }
