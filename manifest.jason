@@ -1,0 +1,20 @@
+{
+  "name": "Delicious Bites Digital Menu",
+  "short_name": "DeliciousBites",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3949AB",
+  "icons": [
+    {
+      "src": "icon/Meal_menu.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "icon/Meal_menu.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

@@ -16,7 +16,21 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   <link rel="icon" type="image/png" href="icon/Meal_menu.jpg">
-  
+  <!-- Link Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- Mobile Meta Tags -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#3949AB">
+
+<script>
+  // Register Service Worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script>
+
 
   <style>
     /* Preloader overlay styles */
