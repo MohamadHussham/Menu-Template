@@ -61,11 +61,12 @@ const menuData = {
   ]
 };
 
+
 const translations = {
-  en: { 
-    brand: "Welcome to Delicious Bites", 
-    back: "Back To Main Menu", 
-    summary: "Order Summary", 
+  en: {
+    brand: "Welcome to Delicious Bites",
+    back: "Back To Main Menu",
+    summary: "Order Summary",
     cartEmpty: "Your cart is empty!",
     floatingText: "Total Items",
     grandTotal: "Grand Total",
@@ -73,18 +74,23 @@ const translations = {
     reset: "Reset Order",
     whatsapp: "Send Order On Whatsapp",
     catTitles: {
-        beverages: "Beverages 🍹",
-        chinese: "Chinese Cuisine 🥡",
-        indian: "Indian Cuisine 🍛",
-        Rice: "Rice & Biryani 🍚",
-        Special_Combos: "Special Combos 🍽️",
-        desserts: "Desserts 🍰"
-    }
+      beverages: "Beverages 🍹",
+      chinese: "Chinese Cuisine 🥡",
+      indian: "Indian Cuisine 🍛",
+      Rice: "Rice & Biryani 🍚",
+      Special_Combos: "Special Combos 🍽️",
+      desserts: "Desserts 🍰"
+    },
+    thanksTitle: "Order Sent!",
+    thanksMsg: "Your order has been sent. We will contact you soon.",
+    ok: "OK",
+    locLabel: "📍 Delivery Location",
+    locError: "Location: Not provided"
   },
-  ar: { 
-    brand: "أهلاً وسهلاً بكم في لقيمات لذيذة", 
-    back: "العودة للقائمة", 
-    summary: "ملخص الطلب", 
+  ar: {
+    brand: "أهلاً وسهلاً بكم في لقيمات لذيذة",
+    back: "العودة للقائمة",
+    summary: "ملخص الطلب",
     cartEmpty: "عربة التسوق فارغة!",
     floatingText: "إجمالي العناصر",
     grandTotal: "المبلغ الإجمالي",
@@ -92,13 +98,18 @@ const translations = {
     reset: "إعادة تعيين",
     whatsapp: "إرسال عبر واتساب",
     catTitles: {
-        beverages: "المشروبات 🍹",
-        chinese: "المطبخ الصيني 🥡",
-        indian: "المطبخ الهندي 🍛",
-        Rice: "أرز وبرياني 🍚",
-        Special_Combos: "وجبات خاصة 🍽️",
-        desserts: "حلويات 🍰"
-    }
+      beverages: "المشروبات 🍹",
+      chinese: "المطبخ الصيني 🥡",
+      indian: "المطبخ الهندي 🍛",
+      Rice: "أرز وبرياني 🍚",
+      Special_Combos: "وجبات خاصة 🍽️",
+      desserts: "حلويات 🍰"
+    },
+    thanksTitle: "تم إرسال الطلب!",
+    thanksMsg: "تم إرسال طلبك بنجاح. سنتواصل معك قريباً.",
+    ok: "تم",
+    locLabel: "📍 موقع التوصيل",
+    locError: "الموقع: لم يتم توفيره"
   }
 };
 
@@ -109,29 +120,33 @@ const backButton = document.getElementById("back-button");
 const categoryTitle = document.getElementById("category-title");
 const itemsList = document.querySelector(".items-list");
 
+
+
+// 1. Language Switcher Function
 function setLanguage(lang) {
   currentLang = lang;
+  
+  // Set global direction
   document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
   
-  // Update Header/Static text
-  document.querySelector('.brand').innerText = translations[lang].brand;
-  document.getElementById('back-button').innerText = translations[lang].back;
-  document.getElementById('proceed').innerText = translations[lang].summary;
+  // Update Header/Static text using your translations object
+  const brandEl = document.querySelector('.brand');
+  if (brandEl) brandEl.innerText = translations[lang].brand;
+  
+  const backBtn = document.getElementById('back-button');
+  if (backBtn) backBtn.innerText = translations[lang].back;
+  
+  const summaryBtn = document.getElementById('proceed');
+  if (summaryBtn) summaryBtn.innerText = translations[lang].summary;
 
   // Update Category Cards on Homepage
   document.querySelectorAll(".category-card").forEach(card => {
     const catId = card.getAttribute("data-category");
-    if (translations[lang].catTitles[catId]) {
-        card.querySelector('h3').innerText = translations[lang].catTitles[catId];
+    const titleEl = card.querySelector('h3');
+    if (titleEl && translations[lang].catTitles[catId]) {
+        titleEl.innerText = translations[lang].catTitles[catId];
     }
-  });
-
-  // If inside a category, refresh that view
-  const currentCat = categoryTitle.getAttribute("data-current-cat");
-  if (currentCat) showCategoryPage(currentCat);
-  
-  updateTotalCounter();
-}
+  });}
 
 document.querySelectorAll(".category-card").forEach(category => {
   category.addEventListener("click", () => {
@@ -150,7 +165,7 @@ function showCategoryPage(category) {
   homepage.classList.remove("active");
   categoryPage.classList.add("active");
   categoryTitle.setAttribute("data-current-cat", category);
-  
+
   categoryTitle.textContent = translations[currentLang].catTitles[category] || category.toUpperCase();
   itemsList.innerHTML = ``;
 
@@ -175,7 +190,7 @@ function showCategoryPage(category) {
 }
 
 function attachItemListeners() {
-  
+
   document.querySelectorAll('.item').forEach(itemDiv => {
     const id = itemDiv.getAttribute('data-id');
     const input = itemDiv.querySelector('.quantity');
@@ -220,9 +235,9 @@ function updateTotalCounter() {
   if (total > 0) {
     if (totalQtySpan) totalQtySpan.textContent = total;
     if (floatingBtn) {
-        floatingBtn.style.display = 'block';
-        // Simple label update for floating button
-        floatingBtn.innerHTML = `🛒 ${translations[currentLang].floatingText}: (<span id="totalQty">${total}</span>)`;
+      floatingBtn.style.display = 'block';
+      // Simple label update for floating button
+      floatingBtn.innerHTML = `🛒 ${translations[currentLang].floatingText}: (<span id="totalQty">${total}</span>)`;
     }
   } else {
     if (floatingBtn) floatingBtn.style.display = 'none';
@@ -253,69 +268,69 @@ function handleProceed() {
 }
 
 function renderSummaryPage(items, total) {
-    const mainContent = document.querySelector('.main-content');
-    const summaryView = document.getElementById('summary-view');
-    const container = summaryView.querySelector('.summary-container');
+  const mainContent = document.querySelector('.main-content');
+  const summaryView = document.getElementById('summary-view');
+  const container = summaryView.querySelector('.summary-container');
 
-    // 1. Set global direction for the summary page
-    const isAr = currentLang === 'ar';
-    summaryView.dir = isAr ? 'rtl' : 'ltr';
-    summaryView.style.textAlign = isAr ? 'right' : 'left';
+  // 1. Set global direction for the summary page
+  const isAr = currentLang === 'ar';
+  summaryView.dir = isAr ? 'rtl' : 'ltr';
+  summaryView.style.textAlign = isAr ? 'right' : 'left';
 
-    mainContent.style.display = 'none';
-    summaryView.style.display = 'block';
+  mainContent.style.display = 'none';
+  summaryView.style.display = 'block';
 
-    // 2. Clear and build header
-    container.innerHTML = `<h1>${translations[currentLang].summary}</h1>`;
-    
-    // 3. Loop items using Flexbox to handle "Start vs End" positioning
-    items.forEach(item => {
-        container.innerHTML += `
+  // 2. Clear and build header
+  container.innerHTML = `<h1>${translations[currentLang].summary}</h1>`;
+
+  // 3. Loop items using Flexbox to handle "Start vs End" positioning
+  items.forEach(item => {
+    container.innerHTML += `
             <div class="summary-item" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0;">
                 <strong style="flex: 1;">${item.name[currentLang]}</strong>
                 <span dir="ltr" style="font-weight: bold; margin-${isAr ? 'right' : 'left'}: 15px;">
                     ${item.qty} x ${item.price} = $${item.subtotal.toFixed(2)}
                 </span>
             </div>`;
-    });
+  });
 
-    // 4. Grand Total Row
-    container.innerHTML += `
+  // 4. Grand Total Row
+  container.innerHTML += `
         <div style="display: flex; justify-content: space-between; margin-top: 20px; border-top: 2px solid #333; padding-top: 10px;">
             <h2>${translations[currentLang].grandTotal}:</h2>
             <h2 dir="ltr">$${total.toFixed(2)}</h2>
         </div>`;
 
-    // 5. Create Controls (Buttons)
-    const controlsContainer = document.createElement('div');
-    controlsContainer.className = 'summary-controls';
-    controlsContainer.style.display = 'flex';
-    controlsContainer.style.gap = '10px';
-    controlsContainer.style.justifyContent = 'center';
-    controlsContainer.style.marginTop = '20px';
+  // 5. Create Controls (Buttons)
+  const controlsContainer = document.createElement('div');
+  controlsContainer.className = 'summary-controls';
+  controlsContainer.style.display = 'flex';
+  controlsContainer.style.gap = '10px';
+  controlsContainer.style.justifyContent = 'center';
+  controlsContainer.style.marginTop = '20px';
 
-    const editBtn = document.createElement('button');
-    editBtn.innerText = translations[currentLang].edit;
-    editBtn.id = "editButton";
-    editBtn.onclick = () => {
-        summaryView.style.display = 'none';
-        mainContent.style.display = 'block';
-    };
+  const editBtn = document.createElement('button');
+  editBtn.innerText = translations[currentLang].edit;
+  editBtn.id = "editButton";
+  editBtn.onclick = () => {
+    summaryView.style.display = 'none';
+    mainContent.style.display = 'block';
+  };
 
-    const resetBtn = document.createElement('button');
-    resetBtn.innerText = translations[currentLang].reset;
-    resetBtn.id = "resetButton";
-    resetBtn.onclick = () => location.reload();
+  const resetBtn = document.createElement('button');
+  resetBtn.innerText = translations[currentLang].reset;
+  resetBtn.id = "resetButton";
+  resetBtn.onclick = () => location.reload();
 
-    const whatsappBtn = document.createElement('button');
-    whatsappBtn.innerText = translations[currentLang].whatsapp;
-    whatsappBtn.id = 'whatsappBtn';
- 
-    whatsappBtn.onclick = () => sendWhatsAppOrder(items, total); 
+  const whatsappBtn = document.createElement('button');
+  whatsappBtn.innerText = translations[currentLang].whatsapp;
+  whatsappBtn.id = 'whatsappBtn';
 
-    // 6. Final Append
-    controlsContainer.append(editBtn, resetBtn);
-    container.append(controlsContainer, whatsappBtn);
+  whatsappBtn.onclick = () => sendWhatsAppOrder(items, total);
+
+  // 6. Final Append
+  controlsContainer.append(editBtn, resetBtn);
+  container.append(controlsContainer, whatsappBtn);
 }
 
 
@@ -327,54 +342,54 @@ function renderSummaryPage(items, total) {
 
 // 2. The Combined Function
 function sendWhatsAppOrder(items, currentTotal) {
-    const isAr = currentLang === 'ar';
-    const phoneNumber = "96176045076";
-    
-    // Header based on language
-    let whatsappText = isAr ? "*طلب جديد:*\n" : "*New Order:*\n";
-    
-    // Build item list from the passed 'items' array
-    items.forEach(item => {
-        const itemName = item.name[currentLang];
-        whatsappText += `• ${itemName} (${item.qty} x ${item.price})\n`;
-    });
+  const isAr = currentLang === 'ar';
+  const phoneNumber = "96176045076";
 
-    // Grand Total
-    const totalLabel = isAr ? "المبلغ الإجمالي" : "Grand Total";
-    whatsappText += `\n*${totalLabel}: $${currentTotal.toFixed(2)}*`;
+  // Header based on language
+  let whatsappText = isAr ? "*طلب جديد:*\n" : "*New Order:*\n";
 
-    // Handle Location (Optional: requests browser permission)
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                const locLabel = isAr ? "📍 موقع التوصيل" : "📍 Delivery Location";
-                whatsappText += `\n\n${locLabel}:\nhttps://www.google.com/maps?q=${lat},${lng}`;
-                finishWhatsApp(whatsappText, phoneNumber);
-            },
-            () => {
-                // If user denies location
-                const locError = isAr ? "\n\nالموقع: لم يتم توفيره" : "\n\nLocation: Not provided";
-                whatsappText += locError;
-                finishWhatsApp(whatsappText, phoneNumber);
-            }
-        );
-    } else {
+  // Build item list from the passed 'items' array
+  items.forEach(item => {
+    const itemName = item.name[currentLang];
+    whatsappText += `• ${itemName} (${item.qty} x ${item.price})\n`;
+  });
+
+  // Grand Total
+  const totalLabel = isAr ? "المبلغ الإجمالي" : "Grand Total";
+  whatsappText += `\n*${totalLabel}: $${currentTotal.toFixed(2)}*`;
+
+  // Handle Location (Optional: requests browser permission)
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const locLabel = isAr ? "📍 موقع التوصيل" : "📍 Delivery Location";
+        whatsappText += `\n\n${locLabel}:\nhttps://www.google.com/maps?q=${lat},${lng}`;
         finishWhatsApp(whatsappText, phoneNumber);
-    }
+      },
+      () => {
+        // If user denies location
+        const locError = isAr ? "\n\nالموقع: لم يتم توفيره" : "\n\nLocation: Not provided";
+        whatsappText += locError;
+        finishWhatsApp(whatsappText, phoneNumber);
+      }
+    );
+  } else {
+    finishWhatsApp(whatsappText, phoneNumber);
+  }
 }
 
 // Helper to open the final link
 function finishWhatsApp(text, phone) {
-    const encodedText = encodeURIComponent(text);
-    const link = `https://wa.me/${phone}?text=${encodedText}`;
-    window.open(link, '_blank');
+  const encodedText = encodeURIComponent(text);
+  const link = `https://wa.me/${phone}?text=${encodedText}`;
+  window.open(link, '_blank');
 }
 
 
 
- document.addEventListener('touchmove', function(e) {
+document.addEventListener('touchmove', function (e) {
   // Check if the user is at the very top of the page
   if (window.scrollY === 0) {
     // Note: {passive: false} is required for preventDefault() to work in modern browsers
@@ -384,13 +399,13 @@ function finishWhatsApp(text, phone) {
 // Apply Fade-in Effect
 document.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
-      document.body.classList.add("fade-in");
+    document.body.classList.add("fade-in");
   }, 500);
 });
 
-  
-  
-  
-  
+
+
+
+
 
 
