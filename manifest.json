@@ -7,14 +7,14 @@
   "theme_color": "#3949AB",
   "icons": [
     {
-      "src": "icon/Meal_menu.jpg",
+      "src": "icon/Meal_menu.jpg,
       "sizes": "192x192",
-      "type": "image/jpeg"
+      "type": "image/jpg"
     },
     {
       "src": "icon/Meal_menu.jpg",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/jpg"
     }
   ]
 }
