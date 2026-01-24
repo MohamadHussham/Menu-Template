@@ -310,7 +310,8 @@ function renderSummaryPage(items, total) {
     const whatsappBtn = document.createElement('button');
     whatsappBtn.innerText = translations[currentLang].whatsapp;
     whatsappBtn.id = 'whatsappBtn';
-    whatsappBtn.onclick = () => sendWhatsApp(items, total); // Recommended: add a helper function
+ 
+    whatsappBtn.onclick = () => sendWhatsAppOrder(items, total); 
 
     // 6. Final Append
     controlsContainer.append(editBtn, resetBtn);
@@ -319,25 +320,56 @@ function renderSummaryPage(items, total) {
 
 
 // Ensure sendWhatsAppMessage is defined globally or inside the same scope
-function sendWhatsAppMessage(lat, lng, currentTotal, targetWindow) {
-    let whatsappText = "I want to order:\n";
-    document.querySelectorAll(".summary-item p").forEach(p => {
-        whatsappText += `- ${p.innerText.trim()}\n`;
+
+
+// 1. Update the call inside renderSummaryPage to pass 'items':
+// whatsappBtn.onclick = () => sendWhatsAppOrder(items, total);
+
+// 2. The Combined Function
+function sendWhatsAppOrder(items, currentTotal) {
+    const isAr = currentLang === 'ar';
+    const phoneNumber = "96176045076";
+    
+    // Header based on language
+    let whatsappText = isAr ? "*طلب جديد:*\n" : "*New Order:*\n";
+    
+    // Build item list from the passed 'items' array
+    items.forEach(item => {
+        const itemName = item.name[currentLang];
+        whatsappText += `• ${itemName} (${item.qty} x ${item.price})\n`;
     });
 
-    whatsappText += `\nGrand Total: $${currentTotal.toFixed(2)}`;
+    // Grand Total
+    const totalLabel = isAr ? "المبلغ الإجمالي" : "Grand Total";
+    whatsappText += `\n*${totalLabel}: $${currentTotal.toFixed(2)}*`;
 
-    if (lat && lng) {
-        whatsappText += `\n\n📍 Delivery Location:\nhttps://www.google.com/maps?q=${lat},${lng}`;
+    // Handle Location (Optional: requests browser permission)
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const locLabel = isAr ? "📍 موقع التوصيل" : "📍 Delivery Location";
+                whatsappText += `\n\n${locLabel}:\nhttps://www.google.com/maps?q=${lat},${lng}`;
+                finishWhatsApp(whatsappText, phoneNumber);
+            },
+            () => {
+                // If user denies location
+                const locError = isAr ? "\n\nالموقع: لم يتم توفيره" : "\n\nLocation: Not provided";
+                whatsappText += locError;
+                finishWhatsApp(whatsappText, phoneNumber);
+            }
+        );
     } else {
-        whatsappText += `\n\nLocation: Not provided`;
+        finishWhatsApp(whatsappText, phoneNumber);
     }
+}
 
-    const encodedText = encodeURIComponent(whatsappText);
-    const link = `https://wa.me/96176045076?text=${encodedText}`;
-    
-    if (targetWindow) targetWindow.location.href = link;
-    else window.open(link, '_blank');
+// Helper to open the final link
+function finishWhatsApp(text, phone) {
+    const encodedText = encodeURIComponent(text);
+    const link = `https://wa.me/${phone}?text=${encodedText}`;
+    window.open(link, '_blank');
 }
 
 
