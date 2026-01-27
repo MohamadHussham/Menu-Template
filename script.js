@@ -350,6 +350,52 @@ container.innerHTML = `<h1>${translations[currentLang].summary}</h1>` + itemsHtm
             <p style="margin: 0; font-style: italic; color: white;">${orderNote}</p>
         </div>`;
   }
+
+ // Inside renderSummaryPage, before the WhatsApp button:
+const dropdownLabel = isAr ? "طريقة الطلب:" : "Order Method:";
+const deliveryOptions = [
+    { id: 'standard', en: 'Standard Delivery', ar: 'توصيل عادي' },
+    { id: 'fast', en: 'Dine-in (Fast)', ar: 'داخل المطعم' },
+    { id: 'pickup', en: 'Self Pickup', ar: 'استلام شخصي' }
+];
+
+let dropdownHtml = `
+    <div style="margin-top: 20px; text-align: ${isAr ? 'right' : 'left'};">
+        <label style="display: block; margin-bottom: 8px; font-weight: bold;">${dropdownLabel}</label>
+        <select id="deliveryDropdown" style="width: 100%; padding: 12px; border-radius: 8px; background: #222; color: white; border: 1px solid #444;">`;
+
+deliveryOptions.forEach(opt => {
+    dropdownHtml += `<option value="${opt.id}">${isAr ? opt.ar : opt.en}</option>`;
+});
+dropdownHtml += `</select></div><div id="dynamic-input-area" style="margin-top: 15px;"></div>`;
+
+container.innerHTML += dropdownHtml;
+
+const deliveryDropdown = document.getElementById('deliveryDropdown');
+const dynamicArea = document.getElementById('dynamic-input-area');
+
+deliveryDropdown.addEventListener('change', function() {
+    const choice = this.value;
+    dynamicArea.innerHTML = ""; // Clear existing
+
+    if (choice === 'fast') {
+        const legend = isAr ? "رقم الطاولة" : "Table Number";
+        dynamicArea.innerHTML = `
+            <fieldset style="border: 1px solid #444; border-radius: 8px; padding: 10px;">
+                <legend style="padding: 0 10px; font-size: 0.9rem; color:green;">${legend}</legend>
+                <input type="number" id="tableInput" style="width: 100%; background-color:white; border: none; color: black; outline: none;" placeholder="...">
+            </fieldset>`;
+    } else if (choice === 'pickup') {
+        const legend = isAr ? "وقت الاستلام" : "What time do you want the order?";
+        dynamicArea.innerHTML = `
+            <fieldset style="border: 1px solid #444; border-radius: 8px; padding: 10px;">
+                <legend style="padding: 0 10px; font-size: 0.9rem;color:green;">${legend}</legend>
+                <input type="time" id="timeInput" style="width: 100%; background-color:white; border: none; color: black; outline: none;">
+            </fieldset>`;
+    }
+});
+
+// ------------------------------
   // 5. Create Controls (Buttons)
   const controlsContainer = document.createElement('div');
   controlsContainer.className = 'summary-controls';
@@ -393,6 +439,7 @@ container.innerHTML = `<h1>${translations[currentLang].summary}</h1>` + itemsHtm
 function sendWhatsAppOrder(items, currentTotal) {
   const isAr = currentLang === 'ar';
   const phoneNumber = "96176045076";
+  const choice = document.getElementById('deliveryDropdown').value;
 
   let whatsappText = isAr ? "*طلب جديد:*\n" : "*New Order:*\n";
 
@@ -406,40 +453,44 @@ function sendWhatsAppOrder(items, currentTotal) {
   });
 
   const totalLabel = isAr ? "المبلغ الإجمالي" : "Grand Total";
-  if (isAr) {
-    whatsappText += `\n\u202B*${totalLabel}: $${currentTotal.toFixed(2)}*\u202C`;
-  } else {
-    whatsappText += `\n*${totalLabel}: $${currentTotal.toFixed(2)}*`;
-  }
+  whatsappText += isAr ? `\n\u202B*${totalLabel}: $${currentTotal.toFixed(2)}*\u202C` : `\n*${totalLabel}: $${currentTotal.toFixed(2)}*`;
 
-  // --- ADDED NOTE SECTION ---
   if (orderNote && orderNote.trim() !== "") {
     const noteHeader = isAr ? "📝 ملاحظات:" : "📝 Notes:";
     whatsappText += `\n\n${noteHeader}\n${orderNote}`;
   }
-  // --------------------------
 
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        const locLabel = isAr ? "📍 موقع التوصيل" : "📍 Delivery Location";
-        whatsappText += `\n\n${locLabel}:\nhttps://www.google.com/maps?q=${lat},${lng}`;
-        finishWhatsApp(whatsappText, phoneNumber);
-      },
-      () => {
-        const locError = isAr ? "\n\nالموقع: لم يتم توفيره" : "\n\nLocation: Not provided";
-        whatsappText += locError;
-        finishWhatsApp(whatsappText, phoneNumber);
-      }
-    );
-  } else {
+  // --- CONDITIONAL LOGIC BASED ON DROPDOWN ---
+  if (choice === 'fast') {
+    const tableNo = document.getElementById('tableInput').value || "N/A";
+    whatsappText += isAr ? `\n\n📍 رقم الطاولة: ${tableNo}` : `\n\n📍 Table Number: ${tableNo}`;
     finishWhatsApp(whatsappText, phoneNumber);
+  } 
+  else if (choice === 'pickup') {
+    const pickTime = document.getElementById('timeInput').value || "N/A";
+    whatsappText += isAr ? `\n\n⏰ وقت الاستلام: ${pickTime}` : `\n\n⏰ Pickup Time: ${pickTime}`;
+    finishWhatsApp(whatsappText, phoneNumber);
+  } 
+  else {
+    // Standard Geolocation
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const locLabel = isAr ? "📍 موقع التوصيل" : "📍 Delivery Location";
+          whatsappText += `\n\n${locLabel}:\nhttps://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`;
+          finishWhatsApp(whatsappText, phoneNumber);
+        },
+        () => {
+          whatsappText += isAr ? "\n\n📍 الموقع: لم يتم توفيره" : "\n\n📍 Location: Not provided";
+          finishWhatsApp(whatsappText, phoneNumber);
+        }
+      );
+    } else {
+      finishWhatsApp(whatsappText, phoneNumber);
+    }
   }
-
-  
 }
+
 
 // Helper to open the final link
 function finishWhatsApp(text, phone) {
