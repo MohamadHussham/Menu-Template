@@ -210,7 +210,7 @@ header {
   /* Centers content inside the grid cells */
   justify-items: center;
   /* THIS ADDS THE SPACE AT THE BOTTOM */
-  padding-bottom: 100px;
+  padding-bottom: 200px;
 }
 
 
@@ -289,7 +289,7 @@ header {
 }
 #notesBtns {
   position: fixed;
-  bottom: 50px;
+  bottom: 120px;
   left: 0;
   right: 0;
   z-index: 2500;
@@ -607,6 +607,62 @@ p.cart {
   border-radius: 5px;
   cursor: pointer;
 }
+/* Ensure the body has some padding at the bottom so the content doesn't hide behind the fixed banner and footer */
+body {
+  padding-bottom: 80px; /* Adjust this value based on the combined height of your banner and footer */
+}
+
+/* Styles for the moving sticky banner */
+.moving-text-container {
+  width: 100%;
+  overflow: hidden;
+  background-color: #ffeb3b; /* Bright background for visibility */
+  padding: 10px 0;
+  border-top: 1px solid #ddd;
+  
+  /* Make it sticky/fixed at the bottom, above the footer */
+  position: fixed;
+  bottom: 45px; /* Adjust this value: Footer height + desired margin (e.g., footer is approx 35px high + 5px margin = 40px) */
+  left: 0;
+  right: 0;
+  z-index: 1000; /* Ensure it stays on top of other content */
+  margin-bottom: 5px; /* Adds 5px margin above the footer */
+}
+
+.moving-text {
+  white-space: nowrap;
+  display: inline-block;
+  font-weight: bold;
+  color: #333;
+  /* Animation from right to left */
+  animation: marquee 20s linear infinite; /* Increased duration for smoother, slower movement */
+}
+
+@keyframes marquee {
+  0% { transform: translateX(100vw); } /* Starts completely off-screen right */
+  100% { transform: translateX(-100vw); } /* Ends completely off-screen left */
+}
+
+/* Optional: Pause the movement when the user hovers over it */
+.moving-text-container:hover .moving-text {
+  animation-play-state: paused;
+}
+
+/* Ensure the footer is also positioned correctly at the bottom */
+footer {
+    position: fixed; /* Fixes the footer to the very bottom of the viewport */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+    background-color: #fff; /* Match your site's background */
+    border-top: 1px solid #ccc;
+    z-index: 1001; /* Ensure footer is above the banner */
+    height: 35px; /* Define footer height for precise positioning of the banner */
+}
+
 
 
 /* Footer styling */
@@ -660,7 +716,7 @@ footer .designer {
 
     gap: 10px;
     padding: 10px;
-    padding-bottom: 80px;
+    padding-bottom: 150px;
   }
 
   .categories {
@@ -875,7 +931,7 @@ footer .designer {
     grid-template-columns: repeat(2, 1fr);
     padding: 10px;
     place-items: center;
-    padding-bottom: 120px;
+    padding-bottom: 180px;
   }
 
   .item {
@@ -891,7 +947,7 @@ footer .designer {
     /* Centers them horizontally */
     gap: 10px;
     /* Space between the two buttons */
-    bottom: 50px;
+    bottom: 120px;
     /* Adjust distance from bottom */
   }
 
@@ -1033,6 +1089,7 @@ footer .designer {
   .items-list {
     display: grid;
     grid-template-columns: 1fr;
+    padding-bottom: 200px;
   }
 
   #proceed {
